@@ -1,0 +1,50 @@
+#include <iostream>
+#include <vector>
+
+bool check (std::vector <int> pre_order, std::vector <int> in_order, std::vector <int> post_order, int pre_start, int pre_end,
+    int in_start, int in_end, int post_start, int post_end) {
+    if (pre_start > pre_end || in_start > in_end || post_start > post_end) return true;
+    int root_value = pre_order[pre_start];
+    if (root_value != post_order[post_end]) return false;
+    int root_in_index = -1;
+    for (int i = in_start; i <= in_end; ++i) {
+        if (in_order[i] == root_value) {
+            root_in_index = i;
+            break;
+        }
+    }
+    if (root_in_index == -1) return false;
+    int left_tree_size = root_in_index - in_start;
+    bool left_valid = check(pre_order, in_order, post_order, pre_start + 1, pre_start + left_tree_size, in_start, root_in_index - 1, post_start, post_start + left_tree_size - 1);
+    bool right_valid = check(pre_order, in_order, post_order,pre_start + left_tree_size + 1, pre_end, root_in_index + 1, in_end, post_start + left_tree_size, post_end - 1);
+    return left_valid && right_valid;
+}
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    int n;
+    std::cin >> n;
+    if (n != 0) {
+        std::vector<int> pre_order(n), in_order(n), post_order(n);
+        for (int i = 0; i < n; ++i) std::cin >> pre_order[i];
+        for (int i = 0; i < n; ++i) std::cin >> in_order[i];
+        for (int i = 0; i < n; ++i) std::cin >> post_order[i];
+        if (pre_order[0] != post_order[n - 1]) {
+            std::cout << "NO";
+            return 0;
+        }
+        int pre_index = 0;
+
+        if (check(pre_order, in_order, post_order, 0, n-1, 0, n-1, 0, n-1)) {
+            std::cout << "YES";
+        } else {
+            std::cout << "NO";
+        }
+    }
+    else {
+        std::cout << "YES";
+    }
+
+    return 0;
+}
